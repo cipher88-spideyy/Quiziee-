@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bestie Check 🎀</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Georgia, serif;
+  background: linear-gradient(135deg,#ffe3ed,#fff1f5,#f8d9e6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #743d55;
+}
+
+.card {
+  background: #fffafd;
+  width: 100%;
+  max-width: 440px;
+  padding: 30px 23px;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 10px 35px #c77b9940;
+  border: 1px solid white;
+}
+
+.heart {
+  font-size: 43px;
+  margin-bottom: 8px;
+}
+
+h1 { font-size: 29px; margin: 10px 0; }
+
+p { line-height: 1.6; color: #98647b; }
+
+.small {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #c17b98;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.main-btn {
+  background: #d982a5;
+  color: white;
+  border-radius: 30px;
+  padding: 14px 28px;
+  font-size: 16px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.main-btn:hover { background: #c96d94; }
+
+.option {
+  display: block;
+  width: 100%;
+  background: #fff0f5;
+  border: 1px solid #f4d2df;
+  color: #81465f;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 14px;
+  font-size: 15px;
+  text-align: left;
+  transition: .2s;
+}
+
+.option:hover {
+  background: #f9dce8;
+  transform: translateY(-2px);
+}
+
+.option.selected {
+  background: #e7b1c6;
+  color: white;
+  border-color: #d982a5;
+}
+
+.progress-bg {
+  height: 7px;
+  background: #f4dce6;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+.progress {
+  height: 7px;
+  width: 0%;
+  background: #d982a5;
+  border-radius: 10px;
+  transition: .3s;
+}
+
+#quiz, #result { display: none; }
+
+.number {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #bd7894;
+}
+
+.result-score {
+  font-size: 55px;
+  color: #ce7e9e;
+  margin: 15px;
+}
+
+.footer {
+  font-size: 11px;
+  margin-top: 25px;
+  color: #c18ba1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="heart">🎀</div>
+  <div class="small">THE ULTIMATE FRIENDSHIP TEST</div>
+
+  <div id="welcome">
+    <h1>How well do you know me?</h1>
+    <p>
+      Welcome, bestie! 💌<br>
+      Let's see if you actually pay attention
+      to all my little details.
+    </p>
+    <p>10 questions. One friendship. No pressure... 👀</p>
+    <button class="main-btn" onclick="startQuiz()">
+      Let's find out ♡
+    </button>
+  </div>
+
+  <div id="quiz">
+    <div class="number" id="counter"></div>
+    <div class="progress-bg">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <h1 id="question"></h1>
+    <div id="options"></div>
+
+    <button class="main-btn" id="next" onclick="nextQuestion()" disabled>
+      Next question →
+    </button>
+  </div>
+
+  <div id="result">
+    <div class="heart">💗</div>
+    <div class="small">YOUR FINAL RESULT</div>
+    <h1 id="resultTitle">Bestie report!</h1>
+    <div class="result-score" id="score"></div>
+    <p id="message"></p>
+
+    <button class="main-btn" onclick="restart()">
+      Try again ↻
+    </button>
+    <p class="footer">Made with love & a little bit of drama ♡</p>
+  </div>
+
+</div>
+
+<script>
+
+// CUSTOMIZE YOUR QUESTIONS HERE!
+// correctIndex: 0 = first option
+// correctIndex: 1 = second option
+// correctIndex: 2 = third option
+// correctIndex: 3 = fourth option
+
+const questions = [
+{
+  q: "What's my biggest obsession?",
+  a: ["Food", "Sleeping", "Shopping", "Music"],
+  correctIndex: 0
+},
+{
+  q: "What's my dream destination?",
+  a: ["Paris", "London", "Switzerland", "Italy"],
+  correctIndex: 2
+},
+{
+  q: "What's my favourite type of day?",
+  a: ["Rainy day", "Sunny day", "Snowy day", "Cloudy day"],
+  correctIndex: 0
+},
+{
+  q: "What makes me happiest?",
+  a: ["Unexpected gifts", "Good food", "Long talks", "All of these"],
+  correctIndex: 3
+},
+{
+  q: "What's my biggest weakness?",
+  a: ["Overthinking", "Being lazy", "Getting emotional", "Being stubborn"],
+  correctIndex: 0
+},
+{
+  q: "What's my dream lifestyle?",
+  a: ["Peaceful and simple", "Rich and luxurious", "Adventurous", "A little bit of everything"],
+  correctIndex: 3
+},
+{
+  q: "What would I choose?",
+  a: ["Late night drive", "Shopping spree", "Movie night", "Food date"],
+  correctIndex: 3
+},
+{
+  q: "What annoys me the most?",
+  a: ["Being ignored", "Lies", "Last-minute plans", "All of these"],
+  correctIndex: 3
+},
+{
+  q: "What's something I can never say no to?",
+  a: ["Food", "A cute outfit", "A good gossip session", "A surprise"],
+  correctIndex: 0
+},
+{
+  q: "What matters most to me in friendship?",
+  a: ["Loyalty", "Honesty", "Effort", "All of these"],
+  correctIndex: 3
+}
+];
+
+let current = 0;
+let points = 0;
+let selected = null;
+
+function startQuiz() {
+  document.getElementById("welcome").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+  showQuestion();
+}
+
+function showQuestion() {
+  selected = null;
+
+  const item = questions[current];
+
+  document.getElementById("counter").textContent =
+    `QUESTION ${current + 1} OF ${questions.length}`;
+
+  document.getElementById("question").textContent = item.q;
+
+  document.getElementById("progress").style.width =
+    (current / questions.length * 100) + "%";
+
+  document.getElementById("next").disabled = true;
+
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+
+  item.a.forEach((answer, index) => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = answer;
+
+    btn.onclick = () => {
+      selected = index;
+
+      document.querySelectorAll(".option").forEach(b => {
+        b.classList.remove("selected");
+      });
+
+      btn.classList.add("selected");
+      document.getElementById("next").disabled = false;
+    };
+
+    options.appendChild(btn);
+  });
+
+  document.getElementById("next").textContent =
+    current === questions.length - 1 ? "See my results ♡" : "Next question →";
+}
+
+function nextQuestion() {
+  if (selected === null) return;
+
+  if (selected === questions[current].correctIndex) {
+    points++;
+  }
+
+  current++;
+
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("result").style.display = "block";
+  document.getElementById("progress").style.width = "100%";
+
+  document.getElementById("score").textContent =
+    points + "/" + questions.length;
+
+  let title, message;
+
+  if (points >= 9) {
+    title = "SOULMATE BESTIE! 🏆";
+    message = "You know me better than I know myself. You're literally my person! 💗";
+  } else if (points >= 7) {
+    title = "PRETTY GOOD, BESTIE! 🎀";
+    message = "Okayyy, you actually pay attention. I see you!";
+  } else if (points >= 5) {
+    title = "WE NEED TO TALK 😭";
+    message = "You know some things, but clearly you need to listen more!";
+  } else {
+    title = "WHO EVEN ARE YOU? 💀";
+    message = "Excuse me?! Are we even besties? Go revise your friendship notes.";
+  }
+
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("message").textContent = message;
+}
+
+function restart() {
+  current = 0;
+  points = 0;
+  selected = null;
+
+  document.getElementById("result").style.display = "none";
+  document.getElementById("welcome").style.display = "block";
+}
+
+</script>
+</body>
+</html>
